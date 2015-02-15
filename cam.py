@@ -30,7 +30,7 @@ def analyseRecord(record):
     dangerCounts = np.zeros((itorX,itorY),dtype = np.uint8)
     for dangerMap in record:
         dangerCounts += dangerMap.astype(int)
-    return np.any(np.greater(dangerCounts,6))
+    return np.any(np.greater(dangerCounts,5))
 
 
 def overallScan(img1, img2):
@@ -79,13 +79,13 @@ dangerMapRecord = []
 ret, imgOld = cap.read()
 while(True):
     # do stuff
+    tic()
     ret, imgNew = cap.read()
     if imgNew is not None:
         dangerMapRecord.append(scan(imgOld, imgNew))
         if len(dangerMapRecord) > 10:
             dangerMapRecord.pop(0)
             if analyseRecord(dangerMapRecord):
-                print "\a"
                 sb.blockScreen()
                 dangerMapRecord = []
 
@@ -95,6 +95,7 @@ while(True):
         imgOld =imgNew
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+    toc()
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
