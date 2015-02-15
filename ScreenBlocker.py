@@ -13,7 +13,8 @@ def blockScreen(screenWidth, screenHeight):
 
     cv2.imshow("Julius", img) #Show the screen
     cv2.moveWindow("Julius", 0, 0) #Move the window to the top left corner
-    cv2.waitKey(3000) #Close the window after 30 seconds
+    cv2.waitKey(6000) #Close the window after 30 seconds
+    cv2.destroyAllWindows()
 
 def drawCenteredText(img, text, font, scale, color, yPos):
     size = cv2.getTextSize(text, font, scale, 1)
@@ -24,6 +25,6 @@ def drawCenteredText(img, text, font, scale, color, yPos):
     cv2.putText(img, text, ((width - textWidth) / 2, yPos), font, scale, color, 1, cv2.CV_AA)
 
 
-time.sleep(60)
+#time.sleep(5)
 
-blockScreen(1440, 900)
+#blockScreen(1440, 900)
