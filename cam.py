@@ -5,6 +5,7 @@ import datetime
 import math
 import time
 import ScreenBlocker as sb
+import os
 
 cap = cv2.VideoCapture(0)
 test = False
@@ -30,7 +31,7 @@ def analyseRecord(record):
     dangerCounts = np.zeros((itorX,itorY),dtype = np.uint8)
     for dangerMap in record:
         dangerCounts += dangerMap.astype(int)
-    return np.any(np.greater(dangerCounts,5))
+    return np.any(np.greater(dangerCounts,6))
 
 
 def overallScan(img1, img2):
@@ -78,7 +79,6 @@ init()
 dangerMapRecord = []
 ret, imgOld = cap.read()
 while(True):
-    tic()
     # do stuff
     ret, imgNew = cap.read()
     if imgNew is not None:
@@ -86,16 +86,19 @@ while(True):
         if len(dangerMapRecord) > 10:
             dangerMapRecord.pop(0)
             if analyseRecord(dangerMapRecord):
-                sb.blockScreen(1440, 900)
+                print "\a"
+                tic()
+                os.system("/usr/bin/osascript -e 'tell application \"System Events\" to click (first button of (every window of (application process \"Google Chrome\")) whose role description is \"minimize button\")'")
+                toc()
+                sb.blockScreen()
                 dangerMapRecord = []
 
 
 
-        cv2.imshow('frame',imgNew)
+        #cv2.imshow('frame',imgNew)
         imgOld =imgNew
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    toc()
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
