@@ -28,8 +28,3 @@ def drawCenteredText(img, text, font, scale, color, yPos):
     width = img.shape[1]
 
     cv2.putText(img, text, ((width - textWidth) / 2, yPos), font, scale, color, 1, cv2.CV_AA)
-
-
-time.sleep(20)
-
-blockScreen(1440, 900)
