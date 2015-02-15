@@ -20,7 +20,6 @@ def init():
     ret, imgBase = cap.read()
     print(type(imgBase))
     x, y, z = imgBase.shape
-    print x, y, z
     global itorY,itorX
     itorX = (x / div)
     itorY = (y / div)
@@ -87,9 +86,6 @@ while(True):
             dangerMapRecord.pop(0)
             if analyseRecord(dangerMapRecord):
                 print "\a"
-                tic()
-                os.system("/usr/bin/osascript -e 'tell application \"System Events\" to click (first button of (every window of (application process \"Google Chrome\")) whose role description is \"minimize button\")'")
-                toc()
                 sb.blockScreen()
                 dangerMapRecord = []
 

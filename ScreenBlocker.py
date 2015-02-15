@@ -30,6 +30,8 @@ def blockScreen():
 
     process = sb.SBApplication.applicationWithBundleIdentifier_('com.apple.systemevents').processes().objectWithName_("Python")
     process.setFrontmost_(True)
+    os.system("/usr/bin/osascript -e 'tell application \"System Events\" to click (first button of (every window of (application process \"Google Chrome\")) whose role description is \"minimize button\")'")
+    
 
     cv2.waitKey(5000)
     cv2.destroyAllWindows()
