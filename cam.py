@@ -3,7 +3,9 @@ import cv2
 import cv
 import datetime
 
-cap = cv2.VideoCapture("4.mov")
+cap = cv2.VideoCapture(1)
+results = []
+tCount = 0
 
 def overallScan(img1, img2):
     
@@ -30,7 +32,7 @@ def percisesScan(img1, img2):
             histS2 += cv2.calcHist([img2[(i,j)]],[0],None,[256],[0,256])
             if(count == 100):
                 sc = cv2.compareHist(histS1, histS2, cv.CV_COMP_BHATTACHARYYA)
-                if(sc > 0.4):
+                if(sc > 0.3):
                     return True
                 else:
                     return False                
@@ -42,8 +44,27 @@ while(True):
     ret, img2 = cap.read()
     if(img2 is None):
         break
-
-    print(overallScan(img1, img2) and percisesScan(img1, img2))
+    r = (overallScan(img1, img2))
+    if(len(results) < 10):
+        if(r):
+            tCount += 1
+        else:
+            tCount -= 1
+    else:
+        if(results.pop(0)):
+            tCount -= 1
+        else:
+            tCount += 1
+        if(r):
+            tCount += 1
+        else:
+            tCount -= 1
+    results.append((overallScan(img1, img2)))
+    if(tCount >= -7):
+        print(True)
+    else:
+        print(False)
+        
 
 
     
