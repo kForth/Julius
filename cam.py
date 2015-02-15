@@ -2,10 +2,61 @@ import numpy as np
 import cv2
 import cv
 import datetime
+import math
 
 cap = cv2.VideoCapture(1)
-results = []
-tCount = 0
+data = [[False for i in range(100)] for j in range(10)]
+test = False
+x = 0
+y = 0
+z = 0
+itorX = 0
+itorY = 0
+div = 6
+imgS1 = np.zeros((div,div))
+imgS2 = np.zeros((div,div))
+tCount = [0,0,0,0,0,0,0,0,0,0]
+count = 0
+
+def init():
+    ret, imgBase = cap.read()
+    print(type(imgBase))
+    x, y, z = imgBase.shape
+    print x, y, z
+    global itorY
+    global itorX
+    itorY = (y / div)
+    itorX = (x / div)
+    
+def que(pos1, thresh, val,chunkX,chunkY):
+    global count
+    global data
+    global tcount
+    pos = pos1
+    print tCount,pos
+    if(len(data[pos]) < 10):
+        if(val):
+            tCount[pos] += 1
+        else:
+            tCount[pos] -= 1
+    else:
+        if(data[pos].pop(0)):
+            tCount[pos] -= 1
+        else:
+            tCount[pos] += 1
+        if(val):
+            tCount[pos] += 1
+        else:
+            tCount[pos] -= 1
+    count += 1
+    if(count == 100):
+        count = 0
+    if(tCount[pos] >= thresh):
+        return True
+    else:
+        return False
+    
+    
 
 def overallScan(img1, img2):
     
@@ -19,51 +70,50 @@ def overallScan(img1, img2):
         return True
     else:
         return False
-    
-def percisesScan(img1, img2):
-    
-    x, y, z = img2.shape
+"""
+def segment(img1, img2, X, Y):
     histS1 = histS2 = 0
     count = 0
-    for i in range (0,x):
-        for j in range (0,y):
-            count += 1
-            histS1 += cv2.calcHist([img1[(i,j)]],[0],None,[256],[0,256])
-            histS2 += cv2.calcHist([img2[(i,j)]],[0],None,[256],[0,256])
-            if(count == 100):
-                sc = cv2.compareHist(histS1, histS2, cv.CV_COMP_BHATTACHARYYA)
-                if(sc > 0.3):
-                    return True
-                else:
-                    return False                
-                
+    for i in range (X, X + div):
+        for j in range (Y, Y + div):
+            
+            endSliceX = X + div
+            histS1 += cv2.calcHist([img1[X:(X+div),Y:(Y+div)]],[0],None,[256],[0,256])
+            histS2 += cv2.calcHist([img2[X:(X+div),Y:(Y+div)]],[0],None,[256],[0,256])
+            sc = cv2.compareHist(histS1, histS2, cv.CV_COMP_BHATTACHARYYA)
+            print sc
+            if(sc > 0.3):
+                test = que(points, -7, True)
+            else:
+                test = que(points, -7, True)
+    return test
+"""     
+    
+def percisesScan(img1, img2):
+    global count
+    for X in range(0, itorX):
+        for Y in range(0, itorY):
+            #return que(results, -7, segment(img1, img2, X, Y))
+            histS1 = cv2.calcHist([img1[X*div:(X+1)*div,Y*div:(Y+1)*div]],[0],None,[256],[0,256])
+            histS2 = cv2.calcHist([img2[X*div:(X+1)*div,Y*div:(Y+1)*div]],[0],None,[256],[0,256])
+            sc = cv2.compareHist(histS1, histS2, cv.CV_COMP_BHATTACHARYYA)
+            #print sc
+            return que(count, -7, sc > 0.55,X,Y)
+    return False        
+                    
+                    
+                    
+def scan(img1, img2):
+    print percisesScan(img1,img2)
 
+
+                
+init()
 while(True):
     ret, frame = cap.read()
     ret, img1 = cap.read()
     ret, img2 = cap.read()
-    if(img2 is None):
-        break
-    r = (overallScan(img1, img2))
-    if(len(results) < 10):
-        if(r):
-            tCount += 1
-        else:
-            tCount -= 1
-    else:
-        if(results.pop(0)):
-            tCount -= 1
-        else:
-            tCount += 1
-        if(r):
-            tCount += 1
-        else:
-            tCount -= 1
-    results.append((overallScan(img1, img2)))
-    if(tCount >= -7):
-        print(True)
-    else:
-        print(False)
+    scan(img1, img2)
         
 
 
