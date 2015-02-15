@@ -14,7 +14,9 @@ def drawCenteredText(img, text, font, scale, color, yPos):
 
 def blockScreen():
 
-    screenWidth, screenHeight = 1440,900\
+    os.system("/usr/bin/osascript -e 'tell application \"System Events\" to click (first button of (every window of (application process \"Google Chrome\")) whose role description is \"minimize button\")'")
+
+    screenWidth, screenHeight = 1440, 900
 
     img = np.zeros((screenHeight, screenWidth), np.uint8) #Create black empty box
 
@@ -30,8 +32,6 @@ def blockScreen():
 
     process = sb.SBApplication.applicationWithBundleIdentifier_('com.apple.systemevents').processes().objectWithName_("Python")
     process.setFrontmost_(True)
-    os.system("/usr/bin/osascript -e 'tell application \"System Events\" to click (first button of (every window of (application process \"Google Chrome\")) whose role description is \"minimize button\")'")
-    
 
     cv2.waitKey(5000)
     cv2.destroyAllWindows()
