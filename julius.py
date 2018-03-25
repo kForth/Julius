@@ -12,8 +12,9 @@ y = 0
 z = 0
 iter_x = 0
 iter_y = 0
-div = 20
+div = 10
 should_block = False
+last_histogram = None
 
 
 def get_frame():
@@ -22,14 +23,6 @@ def get_frame():
     for num, monitor in enumerate(sct.monitors[1:], 1):
         img = sct.grab(monitor)
     return np.array(Image.frombytes('RGB', img.size, img.bgra, 'raw', 'BGRX')) if img else None
-
-
-def init():
-    img_base = get_frame()
-    x, y, z = img_base.shape
-    global iter_y, iter_x
-    iter_x = int(x / div)
-    iter_y = int(y / div)
 
 
 def analyse_record(record):
@@ -41,15 +34,17 @@ def analyse_record(record):
     return np.any(np.greater(danger_counts, 5))
 
 
-def precise_scan(img1, img2):
-    global iter_x, iter_y, div
+def precise_scan(new_frame):
+    global iter_x, iter_y, div, last_histogram
     danger_map = np.zeros((iter_x, iter_y), dtype=np.bool)
     for X in range(0, iter_x):
         for Y in range(0, iter_y):
-            hist_s1 = cv2.calcHist([img1[X * div:(X + 1) * div, Y * div:(Y + 1) * div]], [0], None, [256], [0, 256])
-            hist_s2 = cv2.calcHist([img2[X * div:(X + 1) * div, Y * div:(Y + 1) * div]], [0], None, [256], [0, 256])
-            sc = cv2.compareHist(hist_s1, hist_s2, cv2.HISTCMP_HELLINGER)
-            danger_map[X, Y] = sc > 0.95
+            new_hist = cv2.calcHist([new_frame[X * div:(X + 1) * div, Y * div:(Y + 1) * div]], [0], None, [256], [0, 256])
+            old_hist = last_histogram[X, Y]
+            if old_hist is not None:
+                sc = cv2.compareHist(old_hist, new_hist, cv2.HISTCMP_HELLINGER)
+                danger_map[X, Y] = sc > 0.95
+            last_histogram[X, Y] = new_hist
     return danger_map
 
 
@@ -81,21 +76,20 @@ def block_screen():
 
 def scan():
     global dangerMapRecord
-    global img_old
-    img_new = get_frame()
-    if img_new is not None:
-        dangerMapRecord.append(precise_scan(img_old, img_new))
+    new_frame = get_frame()
+    if new_frame is not None:
+        dangerMapRecord.append(precise_scan(new_frame))
         if len(dangerMapRecord) > 10:
             dangerMapRecord.pop(0)
             if analyse_record(dangerMapRecord):
                 block_screen()
                 dangerMapRecord = []
-        img_old = img_new
 
 if __name__ == "__main__":
-    init()
+    img_base = get_frame()
+    iter_x, iter_y = [int(e / div) for e in img_base.shape[:2]]
     dangerMapRecord = []
-    img_old = get_frame()
+    last_histogram = np.empty((iter_x, iter_y), dtype=np.ndarray)
     while True:
         start_time = time.time()
         scan()
