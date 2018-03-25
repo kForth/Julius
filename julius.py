@@ -22,7 +22,8 @@ def get_frame():
     # TODO: Run on all monitor images.
     for num, monitor in enumerate(sct.monitors[1:], 1):
         img = sct.grab(monitor)
-    return np.array(Image.frombytes('RGB', img.size, img.bgra, 'raw', 'BGRX')) if img else None
+    img = np.array(Image.frombytes('RGB', img.size, img.bgra, 'raw', 'BGRX'))
+    return cv2.resize(img, tuple([int(e / 3) for e in reversed(img.shape[:2])]))
 
 
 def analyse_record(record):
