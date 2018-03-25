@@ -1,19 +1,19 @@
 # Julius
-Prevent epilepsies by detecting quick flashes on screen and blocking them.
-
-## Links
-[Website](http://projectjuli.us)
-
-[Challenge Post](http://deltahacks.challengepost.com/submissions/33000-project-julius)
+Julius tries its best to detect and block any content that may be harmful to people with photosensitive epilepsy.
 
 ## Use
-In order to use Project Julius, you need to install CamTwist for OSX. Then simply run the cam.py file using python 2.7.
+Julius requires OpenCV and a few basic python packages to run. It has been tested with Python 3.6 but should run on other versions.
 
 ## Requirements
-Project Julius requires the use of OSX right now but we're working on compatibility with other systems, so hang tight.
+Julius should be cross-platform but has only been tested on MacOS.
 
 Dependencies include:
-* Python 2.7
+* Python 3.6
 * Numpy
 * OpenCV
-* ScriptingBridge
+* PIL
+* MSS
+
+## History
+Julius was originally created as a submission to the 2015 deltaHacks competition where it won 1st place. 
+You can check out the old entry [here](http://deltahacks.challengepost.com/submissions/33000-project-julius).
