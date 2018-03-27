@@ -9,7 +9,7 @@ from mss import mss
 class JuliusMonitor:
     def __init__(self):
         self.sct = mss()
-        self.period = 0.0625  # 16Hz
+        self.period = 0.1  # 10Hz
         self.x = 0
         self.y = 0
         self.z = 0

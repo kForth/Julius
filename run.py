@@ -32,7 +32,7 @@ def quit():
 
 
 def run():
-    monitor.run(lambda: running, lambda: True)
+    monitor.run(lambda: running, lambda: False)
 
 if __name__ == "__main__":
     running = True
